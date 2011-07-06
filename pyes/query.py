@@ -149,13 +149,13 @@ class Search(object):
                 raise ScriptFieldsError("Parameter script_fields should of type ScriptFields")
         if self.index_boost:
             res['indices_boost'] = self.index_boost
-        if self.min_score:
-            res['min_score'] = self.min_score
+        #if self.min_score:
+        #    res['min_score'] = self.min_score
         if self.facet.facets:
             res.update(self.facet.q)
         return res
 
-    def add_highlight(self, field, fragment_size=None, number_of_fragments=None):
+    def add_highlight(self, field, fragment_size=None, number_of_fragments=None, fragment_offset=None):
         """Add a highlight field.
 
         The Search object will be returned, so calls to this can be chained.
@@ -163,7 +163,7 @@ class Search(object):
         """
         if self.highlight is None:
             self.highlight = HighLighter("<b>", "</b>")
-        self.highlight.add_field(field, fragment_size, number_of_fragments)
+        self.highlight.add_field(field, fragment_size, number_of_fragments, fragment_offset)
         return self
 
     def add_index_boost(self, index, boost):

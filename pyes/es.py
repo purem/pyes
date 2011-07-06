@@ -204,6 +204,7 @@ class ES(object):
                 body = json.dumps(body, cls=self.encoder)
         else:
             body = ""
+        
         request = RestRequest(method=Method._NAMES_TO_VALUES[method.upper()],
                               uri=path, parameters=params, headers=headers, body=body)
         if self.dump_curl is not None:
@@ -242,18 +243,22 @@ class ES(object):
         """
         This can be used for search and count calls.
         These are identical api calls, except for the type of query.
-        """
+        """        
         if self.autorefresh and self.refreshed == False:
             self.refresh(indices)
+                    
         querystring_args = query_params
         indices = self._validate_indices(indices)
         if doc_types is None:
             doc_types = []
+            
         if isinstance(doc_types, basestring):
             doc_types = [doc_types]
         body = query
         path = self._make_path([','.join(indices), ','.join(doc_types), query_type])
-        response = self._send_request('GET', path, body, querystring_args)
+
+        response = self._send_request('GET', path, body, params=querystring_args)
+
         return response
 
     def _validate_indices(self, indices=None):
@@ -845,7 +850,9 @@ class ES(object):
         directly.
 
         """
+        
         indices = self._validate_indices(indices)
+        
         if doc_types is None:
             doc_types = []
         elif isinstance(doc_types, basestring):
@@ -859,7 +866,6 @@ class ES(object):
             body = json.dumps(query, cls=self.encoder)
         else:
             raise pyes.exceptions.InvalidQuery("search() must be supplied with a Search or Query object, or a dict")
-
         return self._query_call("_search", body, indices, doc_types, **query_params)
 
     def search(self, query, indices=None, doc_types=None, **query_params):
